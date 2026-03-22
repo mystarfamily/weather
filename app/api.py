@@ -2,10 +2,14 @@ import httpx
 import typer
 
 from app.config import settings
+from app.logger import get_logger
+
+logger = get_logger(__name__)
 
 
 def get_location(city: str) -> dict:
     """通过城市名获取经纬度"""
+    logger.debug(f"查询城市位置：{city}")
     response = httpx.get(
         settings.geocoding_url,
         params={
@@ -18,12 +22,16 @@ def get_location(city: str) -> dict:
     response.raise_for_status()
     data = response.json()
     if not data.get("results"):
+        logger.warning(f"找不到城市：{city}")
         raise typer.BadParameter(f"找不到城市：{city}，请检查城市名称")
-    return data["results"][0]
+    location = data["results"][0]
+    logger.debug(f"找到城市：{location['name']}, {location.get('country', '')}")
+    return location
 
 
 def get_weather(lat: float, lon: float) -> dict:
     """通过经纬度获取天气"""
+    logger.debug(f"查询天气：lat={lat}, lon={lon}")
     params = {
         "latitude": lat,
         "longitude": lon,
@@ -35,6 +43,7 @@ def get_weather(lat: float, lon: float) -> dict:
         timeout=settings.request_timeout,
     )
     response.raise_for_status()
+    logger.debug("天气数据获取成功")
     return response.json()
 
 
