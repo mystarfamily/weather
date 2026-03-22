@@ -10,3 +10,4 @@ wheels/
 .venv
 debug.py
 debug*.py
+.env

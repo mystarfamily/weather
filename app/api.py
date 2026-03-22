@@ -1,12 +1,19 @@
 import httpx
 import typer
 
+from app.config import settings
+
 
 def get_location(city: str) -> dict:
     """通过城市名获取经纬度"""
-    url = "https://geocoding-api.open-meteo.com/v1/search"
     response = httpx.get(
-        url, params={"name": city, "count": 1, "language": "zh"}, timeout=10
+        settings.geocoding_url,
+        params={
+            "name": city,
+            "count": 1,
+            "language": settings.request_language,
+        },
+        timeout=settings.request_timeout,
     )
     response.raise_for_status()
     data = response.json()
@@ -17,13 +24,16 @@ def get_location(city: str) -> dict:
 
 def get_weather(lat: float, lon: float) -> dict:
     """通过经纬度获取天气"""
-    url = "https://api.open-meteo.com/v1/forecast"
     params = {
         "latitude": lat,
         "longitude": lon,
         "current": "temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m",
     }
-    response = httpx.get(url, params=params, timeout=10)
+    response = httpx.get(
+        settings.weather_url,
+        params=params,
+        timeout=settings.request_timeout,
+    )
     response.raise_for_status()
     return response.json()
 

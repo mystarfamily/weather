@@ -2,7 +2,7 @@ import typer
 from rich.console import Console
 from rich.table import Table
 
-from weather.api import get_location, get_weather, parse_weather
+from app.api import get_location, get_weather, parse_weather
 
 app = typer.Typer()
 console = Console()
