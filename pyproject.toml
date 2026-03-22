@@ -11,3 +11,17 @@ dependencies = [
     "rich>=14.3.3",
     "typer>=0.24.1",
 ]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.0.2",
+    "pytest-cov>=7.1.0",
+    "respx>=0.22.0",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "--cov=app --cov-report=term-missing"
+
+[tool.coverage.report]
+exclude_lines = ["if __name__ == '__main__'"]

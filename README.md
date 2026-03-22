@@ -9,7 +9,6 @@ uv sync
 
 ## 使用
 ```bash
-uv run main.py Beijing
 uv run main.py Shanghai
 ```
 
