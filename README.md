@@ -9,7 +9,7 @@ uv sync
 
 ## 使用
 ```bash
-uv run main.py Shanghai
+uv run weather Shanghai
 ```
 
 ## 开发环境
