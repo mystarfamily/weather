@@ -4,11 +4,12 @@ __pycache__/
 build/
 dist/
 wheels/
+test/
+logs/
 *.egg-info
 
 # Virtual environments
 .venv
-debug.py
 debug*.py
 .env
 .coverage
