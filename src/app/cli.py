@@ -1,44 +1,50 @@
-# src/app/cli.py
+from __future__ import annotations
+
 import sys
+from typing import Any, Dict, Optional
+
 import anyio
 import typer
 from loguru import logger
 
-# 替换为你项目中实际的异步函数和渲染函数
-# 例如: from .api import get_location, get_weather, close_client
-#         from .renderer import render
-from .api import get_location, get_weather, close_client
-from .renderer import render
+from .api import close_client, get_location, get_weather
 from .config import settings
+from .models import WeatherReport
+from .renderer import render
 
-# 必须在装饰器之前定义 app
 app = typer.Typer(help="Weather CLI")
 
 
-def setup_logging(level: str):
+def setup_logging(level: str) -> None:
+    """配置日志级别"""
     logger.remove()
     logger.add(sys.stderr, level=level)
 
 
-async def main(city: str | None):
-    # 在调用 get_weather(location) 之前确保 location 已定义
+async def main(city: Optional[str]) -> None:
+    """
+    CLI 主逻辑（异步）
+    - city: 用户输入的城市名或 None
+    """
     if city is None:
         logger.debug("未指定城市，开始自动定位")
-        location = await get_location()  # 假设返回 dict 或对象
+        location: Dict[str, Any] = await get_location()
     else:
-        # 将 city 包装成 get_weather 期望的结构
         location = {"city": city}
 
-    report = await get_weather(location)
+    report: WeatherReport = await get_weather(location)
     render(report)
     await close_client()
 
 
 @app.command()
 def run(
-    city: str = typer.Argument(None, help="城市名或经纬度"),
+    city: Optional[str] = typer.Argument(None, help="城市名或经纬度"),
     debug: bool = typer.Option(False, "--debug", "-d", help="开启调试日志"),
-):
+) -> None:
+    """
+    CLI 入口函数（同步）
+    """
 
     if not settings.qweather_key:
         typer.secho(
@@ -47,24 +53,16 @@ def run(
         )
         raise typer.Exit(code=1)
 
-    # 如果 city 不是字符串（例如 ArgumentInfo），说明脚本被直接调用，交给 Typer 解析
-    if not isinstance(city, str):
-        app()
-        return
-
+    # Typer 会保证 city 是 str 或 None，不需要 isinstance 检查
     typer.echo(f"查询城市: {city}")
-    """
-    查询天气（示例：weather 上海 或 weather "116.41,39.92"）
-    使用 --debug 或 -d 开启 DEBUG 日志。
-    """
-    # 日志级别设置
+
     if debug:
         setup_logging("DEBUG")
         logger.debug("Debug 模式已启用（来自命令行开关）")
     else:
         setup_logging(getattr(settings, "log_level", "INFO"))
 
-    # 将 city 传入异步 main
+    # 运行异步主逻辑
     anyio.run(main, city)
 
 

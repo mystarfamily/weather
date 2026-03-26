@@ -14,20 +14,34 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      # 安装 uv（官方推荐方式）
       - name: Install uv
         uses: astral-sh/setup-uv@v5
 
-      - name: Set up Python
+      # 安装 Python 3.12（由 uv 管理）
+      - name: Install Python 3.12
         run: uv python install 3.12
 
+      # 安装 Python 依赖（含 dev）
       - name: Install dependencies
         run: uv sync --all-extras --dev
 
+      # 安装 pyright（Node 工具）
+      - name: Install pyright
+        run: npm install -g pyright
+
+      # 运行 ruff lint
       - name: Run ruff check
         run: uvx ruff check .
 
+      # 运行 ruff format 检查
       - name: Run ruff format check
         run: uvx ruff format --check .
 
+      # 运行 pyright 类型检查
+      - name: Run pyright
+        run: pyright
+
+      # 运行 pytest
       - name: Run pytest
-        run: uv run pytest
+        run: uv run pytest --maxfail=1 --disable-warnings -q

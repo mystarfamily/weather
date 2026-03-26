@@ -1,5 +1,5 @@
-from app.models import WeatherReport, ForecastDay
-from app.renderer import render, weekday, get_icon
+from app.models import ForecastDay, WeatherReport
+from app.renderer import get_icon, render, weekday
 
 
 def test_weekday_valid():

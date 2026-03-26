@@ -10,12 +10,14 @@
 适合 CLI 工具、Web 服务、微服务等场景。
 """
 
-from pydantic_settings import BaseSettings, SettingsConfigDict
+from __future__ import annotations
+
 from pydantic import field_validator
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    qweather_key: str
+    qweather_key: str = ""
     base_url: str = "https://pw5ctvrmex.re.qweatherapi.com"
     request_timeout: float = 10.0
     log_level: str = "INFO"
@@ -27,7 +29,8 @@ class Settings(BaseSettings):
     )
 
     @field_validator("qweather_key")
-    def validate_key(cls, v):
+    def validate_key(cls, v: str) -> str:
+        """校验 API Key 是否有效"""
         if not v or v.strip() == "" or "your_qweather_api_key_here" in v:
             raise ValueError(
                 "❌ 未检测到有效的 WEATHER_QWEATHER_KEY，请在 .env 中填写你的和风天气 API Key"

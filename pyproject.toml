@@ -22,6 +22,33 @@ dev = [
     "respx>=0.22.0",
 ]
 
+# -----------------------------
+# Ruff 配置
+# -----------------------------
+[tool.ruff]
+line-length = 88
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B"]
+ignore = ["E501"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+
+# -----------------------------
+# Pyright 配置
+# -----------------------------
+[tool.pyright]
+pythonVersion = "3.12"
+include = ["src"]
+exclude = ["tests"]
+typeCheckingMode = "strict"
+reportMissingImports = true
+reportUnusedImport = true
+reportUnusedVariable = true
+
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

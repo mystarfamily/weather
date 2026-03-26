@@ -1,6 +1,6 @@
+import httpx
 import pytest
 import respx
-import httpx
 
 from app.api import get_weather
 from app.config import settings
